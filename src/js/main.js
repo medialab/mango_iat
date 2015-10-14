@@ -1,3 +1,4 @@
-var Router = require('./router');
-
-new Router();
+ $(function () {
+  var Router = require('./router');
+  new Router();
+});
