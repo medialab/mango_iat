@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var HomeView = require('./views/home.view');
+var MainView = require('./views/main.view');
 
 var Router = Backbone.Router.extend({
   routes: {
@@ -11,8 +11,10 @@ var Router = Backbone.Router.extend({
   },
 
   default: function() {
-    var view = new HomeView();
-    view.render();
+    var view = new MainView();
+    if (view.canRenderSPA) {
+      view.render().setInitialView('#limesurvey');
+    }
   }
 });
 
