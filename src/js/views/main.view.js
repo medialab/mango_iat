@@ -1,6 +1,7 @@
 var $ = require('jquery'),
     Backbone = require('backbone'),
-    MangoSpaView = require('./mangospa.view');
+    MangoSpaView = require('./mangospa.view'),
+    LimeScreenView = require('./limescreen.view');
 
 Backbone.$ = $;
 
@@ -8,6 +9,7 @@ var MainView = Backbone.View.extend({
   el: '#mango-spa-root',
   canRenderSPA: false,
   hasRendered: false,
+  mangoSpaView: null,
 
   initialize: function () {
     this.canRenderSPA = !!$('body').attr('data-spa');
@@ -19,12 +21,18 @@ var MainView = Backbone.View.extend({
       this.hasRendered = true;
 
       // Render first node of the view.
-      var mangoSpaView = new MangoSpaView();
-      this.$el.html(mangoSpaView.render().el);
+      this.mangoSpaView = new MangoSpaView();
+      this.$el.html(this.mangoSpaView.render().el);
 
-      // Kill interactivity in underlying view.
+      // Kill interactivity in underlying views.
       $('body').addClass('freeze');
     }
+    return this;
+  },
+
+  setInitialView: function (target) {
+    var surveyIntro = new LimeScreenView({ el: target });
+    this.mangoSpaView.$el.append(surveyIntro.render().el);
     return this;
   }
 });
