@@ -12,9 +12,7 @@ var Router = Backbone.Router.extend({
 
   default: function() {
     var view = new MainView();
-    if (view.canRenderSPA) {
-      view.render().setInitialView('#limesurvey');
-    }
+    view.render().setInitialView('#limesurvey');
   }
 });
 
