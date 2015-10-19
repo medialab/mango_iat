@@ -5,3 +5,4 @@ gulp-backbone
 
 Boilerplate for Gulp + Backbone.js apps
 
+# Mango SPA (more info to come shortly).
