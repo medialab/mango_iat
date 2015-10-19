@@ -25,19 +25,21 @@ var LimeScreenView = Backbone.View.extend({
     }
 
     // Assign useful part of the DOM pertaining to this view.
-    this.$nextBtn = this.$el.find('#movenextbtn');
+    this.$nextBtn = this.$el.find('button');
     this.formAction = this.$el.attr('action');
 
     this.$nextBtn.on('click', function (e) {
       e.preventDefault();
-      this.createPromise();
+      this.createPromise(this.$nextBtn.attr('value'));
+      return false;
     }.bind(this));
+
     return {
       el: this.el
     };
   },
 
-  createPromise: function () {
+  createPromise: function (injectable) {
     // Populate the POST data object with key/values
     // from the original form inputs (including metadata
     // in invisible inputs).
@@ -48,18 +50,34 @@ var LimeScreenView = Backbone.View.extend({
       data[input.name] = input.value;
     });
 
-    console.log(data);
+    // Inject value from 'next' button to fool Limesurvey's state manager.
+    data[injectable] = injectable;
 
     // Set the views' promise.
     // The 'done' and 'fail' method specified in the initializer
     // will be attached to it. This is how you can control the outcome
     // of click the 'next' button, POSTing away the content, etc...
-    this.promise = $.post(this.formAction, data)
-                    .success(this.promiseSuccessCallback)
-                    .done(function () {
-
+    this.promise = $.ajax({
+                      url: this.formAction,
+                      type: 'POST',
+                      data: data,
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      }
                     })
+                    .success(this.promiseSuccessCallback)
+                    .done(this.promiseDoneCallback)
                     .fail(this.promiseFailCallback);
+  },
+
+  contentForNextScreen: function (successCallback, failureCallback) {
+    $.get(this.formAction)
+     .success(function processDOM(data) {
+        console.log(data);
+     })
+     .fail(function () {
+
+     });
   }
 });
 
