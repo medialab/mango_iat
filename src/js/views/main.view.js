@@ -1,6 +1,6 @@
 var $ = require('jquery'),
+    _ = require('lodash'),
     Backbone = require('backbone'),
-    Cookies = require('js-cookie'),
     MangoSpaView = require('./mangospa.view'),
     LimeScreenView = require('./limescreen.view');
 
@@ -44,27 +44,13 @@ var MainView = Backbone.View.extend({
     if (this.canRenderSPA && !this.hasRendered) {
       this.hasRendered = true;
 
-      // Get HTTP_COOKIE data to fool LimeSurvey.
-      var uri = this.mangoHelperURI + '?csrf=' + Cookies.get('csrftoken');
-      $.get(uri)
-       .success(function (data) {
-          var jsonPayload = JSON.parse(data);
+      // Render first node of the view.
+      this.mangoSpaView = new MangoSpaView();
+      this.$el.html(this.mangoSpaView.render().el);
+      this.setInitialView();
 
-          if (!jsonPayload.success) {
-            console.error('[Mango SPA] ' + jsonPayload.message);
-            return this.dispose();
-          }
-
-          // Render first node of the view.
-          this.mangoSpaView = new MangoSpaView();
-          this.$el.html(this.mangoSpaView.render().el);
-
-          // Kill interactivity in underlying views.
-          $('body').addClass('freeze');
-       }.bind(this))
-       .fail(function () {
-         console.error('[Mango SPA] Failed get HTTP_COOKIE data. Aborting rendering of MainView.');
-       }.bind(this))
+      // Kill interactivity in underlying views.
+      $('body').addClass('freeze');
     } else {
       this.dispose();
     }
