@@ -48,7 +48,7 @@ var MangoSpaView = Backbone.View.extend({
     var domString = $('.question_wrapper').prop('outerHTML'),
         match = domString.match(/There are (\d) question/);
 
-    return match.length > 1 ? parseInt(match[1]) : 0;
+    return (_.isArray(match) && match.length > 1) ? parseInt(match[1]) : 0;
   },
 
   createScreen: function (target, success, fail, done) {
