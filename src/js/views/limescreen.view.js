@@ -7,22 +7,23 @@ Backbone.$ = $;
 var LimeScreenView = Backbone.View.extend({
   $nextBtn: null,
   formAction: null,
+
   promise: null,
-  promiseSuccessCallback: null,
-  promiseDoneCallback: null,
-  promiseFailCallback: null,
+  successCallback: null,
+  failureCallback: null,
 
   initialize: function (opts) {
-    this.promiseSuccessCallback = opts.success || null;
-    this.promiseDoneCallback = opts.done || null;
-    this.promiseFailCallback = opts.fail || null;
+    this.el = this.parseDom(opts.target);
+    this.successCallback = opts.success || null;
+    this.failureCallback = opts.failure || null;
+
+    _.bindAll(this, 'processSuccess');
+
+    return this;
   },
 
   render: function () {
-    // Create cached jQ element if not available yet.
-    if (!this.$el) {
-      this.$el = $(this.el);
-    }
+    this.$el = $(this.el);
 
     // Assign useful part of the DOM pertaining to this view.
     this.$nextBtn = this.$el.find('button');
@@ -37,6 +38,10 @@ var LimeScreenView = Backbone.View.extend({
     return {
       el: this.el
     };
+  },
+
+  parseDom: function (target) {
+    return $(target).get(0);
   },
 
   createPromise: function (injectable) {
@@ -65,19 +70,34 @@ var LimeScreenView = Backbone.View.extend({
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    .success(this.promiseSuccessCallback)
-    .done(this.promiseDoneCallback)
-    .fail(this.promiseFailCallback);
+    .success(this.processSuccess)
+    .fail(this.processFailure);
   },
 
-  contentForNextScreen: function (successCallback, failureCallback) {
-    $.get(this.formAction)
-     .success(function processDOM(data) {
-        console.log(data);
-     })
-     .fail(function () {
+  processSuccess: function (data) {
+    var nodeTree = this.extractNodeTree(data);
+    return this.successCallback(nodeTree);
+  },
 
-     });
+  processFailure: function () {
+    this.dispose();
+    console.error('[Mango SPA] Failed to create LimeScreenView...')
+    return this.failureCallback();
+  },
+
+  extractNodeTree: function (domString) {
+    var match = domString
+                  .replace(/(\r\n|\n|\r|\s{3,})/gm, '')
+                  .match(/<!-- START THE GROUP -->(.*)<!-- END THE GROUP -->/);
+    return (_.isArray(match) && match.length > 1) ? match[1] : '';
+  },
+
+  dispose: function () {
+    this.successCallback = null;
+    this.failureCallback = null;
+    this.promise = null;
+    this.$nextBtn = null;
+    this.formAction = null;
   }
 });
 
