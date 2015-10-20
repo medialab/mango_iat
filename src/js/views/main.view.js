@@ -6,22 +6,29 @@ var $ = require('jquery'),
 
 Backbone.$ = $;
 
+/**
+ * MainView is the root view that plugs itself to the DOM on first place
+ * and deals with whether or not the SPA should be rendered.
+ */
 var MainView = Backbone.View.extend({
   el: '#mango-spa-root',
-  mangoHelperURI: '',
   canRenderSPA: false,
   hasRendered: false,
   mangoSpaView: null,
   initialLimeScreenViewTarget: null,
 
+  /**
+   * Initializes view. Decides whether SPA is rendered or not.
+   * Passed argument is an object of options that must contain
+   * at least a `target` key (CSS selector), referencing the
+   * DOM element that should be parsed to help building the
+   * first LimeScreenView (it would most likely be the form
+   * element in the DOM).
+   *
+   * @param  {Object} opts  The option object.
+   * @return {MainView}
+   */
   initialize: function (opts) {
-    if (!opts || !opts.helper) {
-      return console.error(
-        '[Mango SPA] Missing mango_spa_helper URI. ' +
-        'Set it in `helper` key of MainView#initialize options.'
-      );
-    }
-
     if (!opts || !opts.target) {
       return console.error(
         '[Mango SPA] Missing DOM target for initial LimeScreenView. ' +
@@ -34,11 +41,18 @@ var MainView = Backbone.View.extend({
 
     if (this.canRenderSPA) {
       console.info('[Mango SPA] Building Mango SPA.');
-      this.mangoHelperURI = opts.helper;
       this.initialLimeScreenViewTarget = opts.target;
     }
+
+    return this;
   },
 
+  /**
+   * Renders view... or remove everything to leave
+   * the survey au naturel, Limesurvey style.
+   *
+   * @return {MainView}
+   */
   render: function() {
     // If SPA is used, render it.
     // Otherwise remove overlay and start normal Limesurvey.
@@ -58,6 +72,12 @@ var MainView = Backbone.View.extend({
     return this;
   },
 
+  /**
+   * Creates the first LimeScreenView,
+   * most likely a welcome screen.
+   *
+   * @return {MainView}
+   */
   setInitialView: function () {
     if (!this.canRenderSPA) {
       return;
@@ -84,6 +104,10 @@ var MainView = Backbone.View.extend({
     return this;
   },
 
+  /**
+   * Destroys instance and clean it up.
+   * @return {void}
+   */
   dispose: function () {
     console.info('[Mango SPA] Unbuilding MangoSPA...');
 
@@ -92,7 +116,6 @@ var MainView = Backbone.View.extend({
     this.$el.remove();
     this.$el = null;
     this.el = null;
-    this.mangoHelperURI = null;
     this.canRenderSPA = null;
     this.hasRendered = null;
     this.mangoSpaView = null;
