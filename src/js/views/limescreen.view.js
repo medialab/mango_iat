@@ -58,16 +58,16 @@ var LimeScreenView = Backbone.View.extend({
     // will be attached to it. This is how you can control the outcome
     // of click the 'next' button, POSTing away the content, etc...
     this.promise = $.ajax({
-                      url: this.formAction,
-                      type: 'POST',
-                      data: data,
-                      headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                      }
-                    })
-                    .success(this.promiseSuccessCallback)
-                    .done(this.promiseDoneCallback)
-                    .fail(this.promiseFailCallback);
+      url: this.formAction,
+      type: 'POST',
+      data: data,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    .success(this.promiseSuccessCallback)
+    .done(this.promiseDoneCallback)
+    .fail(this.promiseFailCallback);
   },
 
   contentForNextScreen: function (successCallback, failureCallback) {
