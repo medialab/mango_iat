@@ -9,8 +9,7 @@ Backbone.$ = $;
 /**
  * RootView is the root view that plugs itself to the DOM on first place
  * and deals with whether or not the SPA should be rendered.
- * It has a single child view — MangoSpaView — that will deal with children
- * views (the LimeScreenView instances, e.g. screens of question/trials).
+ * It has a single child view — MangoSpaView — that will deal with
  */
 var RootView = Backbone.View.extend({
   el: '#mango-spa-root',

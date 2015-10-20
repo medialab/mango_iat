@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var MainView = require('./views/main.view');
+var RootView = require('./views/root.view');
 
 var Router = Backbone.Router.extend({
   routes: {
@@ -11,7 +11,7 @@ var Router = Backbone.Router.extend({
   },
 
   default: function() {
-    var view = new MainView({
+    var view = new RootView({
       target: '#limesurvey'
     });
     view.render();
