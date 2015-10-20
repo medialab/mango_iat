@@ -29,7 +29,8 @@ var MainView = Backbone.View.extend({
       );
     }
 
-    this.canRenderSPA = !!$('body').attr('data-spa');
+    // If page title (survey title) contains "[IAT]", allow rendering of the SPA
+    this.canRenderSPA = $('title').get(0).text.indexOf('[IAT]') > -1;
 
     if (this.canRenderSPA) {
       console.info('[Mango SPA] Building Mango SPA.');
