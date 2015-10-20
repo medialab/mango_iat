@@ -12,7 +12,6 @@ var Router = Backbone.Router.extend({
 
   default: function() {
     var view = new MainView({
-      helper: $('meta[name="templateurl"]').attr('content') + 'scripts/mango_spa/mango_spa_helper.php',
       target: '#limesurvey'
     });
     view.render();
