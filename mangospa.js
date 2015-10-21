@@ -176,7 +176,22 @@ if (!window.$ || !window._) {
     }
 
     function setupJsPsych(data) {
-      console.log(data);
+      var jsPsychBlocks = _.map(data.stimuli, function (stim, i) {
+        return {
+          type: 'single-stim',
+          stimuli: [stim],
+          is_html: true,
+          choices: data.choices[i]
+        };
+      });
+
+      return jsPsych.init({
+        display_element: $rootView,
+        experiment_structure: jsPsychBlocks,
+        on_finish: function (data) {
+          console.log(data);
+        }
+      });
     }
 
     function createJsPsychStimuli(choicesElements, stimuliWords) {
