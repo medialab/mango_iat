@@ -19,6 +19,9 @@ if (!window.$ || !window._) {
       var KEYCODE_E = 69,
           KEYCODE_I = 73;
 
+      var answerFormMatchingInputs = [],
+          resultsFormData = {};
+
     // Check to see we go further with SPA or quit.
     if (!verifyIfSinglePageAppIsRequired()) {
       return;
@@ -59,6 +62,9 @@ if (!window.$ || !window._) {
       }).success(function (htmlString) {
         var $domExtract = $(extractNodeTree(htmlString));
         initJsPsych(parseForJsPsych($domExtract));
+        resultsFormData = prepareFormAnswerPostData($(htmlString));
+        answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
+        console.log(resultsFormData, answerFormMatchingInputs);
       }).fail(function () {
         console.error('[Mango Single Page App] Fetching questions — request failed.');
         return dispose();
@@ -217,6 +223,30 @@ if (!window.$ || !window._) {
       });
 
       return htmlChunks;
+    }
+
+    function prepareFormAnswerPostData($domTree) {
+      var resultsFormData = {};
+
+      // Value extracted from submit button,
+      // needed to alter LimeSurvey's state manager.
+      resultsFormData['movesubmit'] = 'movesubmit';
+
+      _.each($domTree.find('input[type="hidden"]'), function (elm) {
+        resultsFormData[elm.name] = elm.value;
+      });
+      return resultsFormData;
+    }
+
+    function prepareFormAnswerMatching($domTree) {
+      var answerFormMatchingInputs = [];
+      _.each($domTree.find('input[type="text"]'), function (input) {
+        answerFormMatchingInputs.push({
+          name: input.name,
+          value: ''
+        });
+      });
+      return answerFormMatchingInputs
     }
 
     function parseTestResults(rawData) {
