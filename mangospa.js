@@ -58,7 +58,7 @@ if (!window.$ || !window._) {
         }
       }).success(function (htmlString) {
         var $domExtract = $(extractNodeTree(htmlString));
-        setupJsPsych(parseForJsPsych($domExtract));
+        initJsPsych(parseForJsPsych($domExtract));
       }).fail(function () {
         console.error('[Mango Single Page App] Fetching questions — request failed.');
         return dispose();
@@ -89,7 +89,7 @@ if (!window.$ || !window._) {
 
       $rootView
         .css({
-          'position': 'fixed',
+          'position': 'absolute',
           'overflow': 'auto',
           'top': 0,
           'left': 0,
@@ -175,7 +175,9 @@ if (!window.$ || !window._) {
       };
     }
 
-    function setupJsPsych(data) {
+    function initJsPsych(data) {
+      $rootView.html('');
+
       var jsPsychBlocks = _.map(data.stimuli, function (stim, i) {
         return {
           type: 'single-stim',
@@ -189,7 +191,7 @@ if (!window.$ || !window._) {
         display_element: $rootView,
         experiment_structure: jsPsychBlocks,
         on_finish: function (data) {
-          console.log(data);
+          parseTestResults(data);
         }
       });
     }
@@ -204,17 +206,21 @@ if (!window.$ || !window._) {
 
       // Create markup for each jsPsych stimuli.
       _.each(choicesElements, function (choice, i) {
-        var markup = '<table class="jspsych-stimulus">' +
-                   '  <tr>' +
-                   '    <td><p>' + choice[0][0] + '</p>' + '<p>' + choice[0][1] + '</p></td>' +
-                   '    <td><p>' + choice[1][0] + '</p>' + '<p>' + choice[1][1] + '</p></td>' +
-                   '    <td colspan="2">' + stimuliWords[i] + '</td>' +
-                   '  </tr>' +
-                   '</table>';
+        var markup = '<div class="jspsych-stimulus">' +
+                     '  <div class="jspsych-choices">' +
+                     '    <div class="jspsych-choice-left"><p>' + choice[0][0] + '</p><p>' + choice[0][1] + '</p></div>' +
+                     '    <div class="jspsych-choice-right"><p>' + choice[1][0] + '</p><p>' + choice[1][1] + '</p></div>' +
+                     '  </div>' +
+                     '  <div class="jspsych-stimulus-word">' + stimuliWords[i] + '</div>' +
+                     '</div>';
         htmlChunks.push(markup);
       });
 
       return htmlChunks;
+    }
+
+    function parseTestResults(rawData) {
+      console.log(rawData);
     }
 
     function dispose() {
