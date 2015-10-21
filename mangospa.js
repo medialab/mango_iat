@@ -64,7 +64,6 @@ if (!window.$ || !window._) {
         initJsPsych(parseForJsPsych($domExtract));
         resultsFormData = prepareFormAnswerPostData($(htmlString));
         answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
-        console.log(resultsFormData, answerFormMatchingInputs);
       }).fail(function () {
         console.error('[Mango Single Page App] Fetching questions — request failed.');
         return dispose();
@@ -193,11 +192,24 @@ if (!window.$ || !window._) {
         };
       });
 
+      // Create the jsPsych instance and let the user finish its test.
+      // Upon test completion, finish populating POST data with serialized
+      // results, and send data to server.
       return jsPsych.init({
         display_element: $rootView,
         experiment_structure: jsPsychBlocks,
         on_finish: function (data) {
-          parseTestResults(data);
+          var results = parseTestResults(data);
+          resultsFormData = _.extend(resultsFormData, reconcileResults(answerFormMatchingInputs, results));
+
+          sendResultsToServer(resultsFormData)
+            .success(function (data) {
+              console.log(data);
+            })
+            .fail(function () {
+              console.error('[Mango Single Page App] There was an error sending back result to the server.');
+              return dispose();
+            });
         }
       });
     }
@@ -212,7 +224,7 @@ if (!window.$ || !window._) {
 
       // Create markup for each jsPsych stimuli.
       _.each(choicesElements, function (choice, i) {
-        var markup = '<div class="jspsych-stimulus" rel="{left:\'' + choice[0][0] + '|' + choice[0][1] + '\',right:\'' + choice[1][0] + '|' + choice[1][1] + '\'}">' +
+        var markup = '<div class="jspsych-stimulus" rel="{\'left\':\'' + choice[0][0] + '|' + choice[0][1] + '\',\'right\':\'' + choice[1][0] + '|' + choice[1][1] + '\'}">' +
                      '  <div class="jspsych-choices">' +
                      '    <div class="jspsych-choice-left"><p>' + choice[0][0] + '</p><p>' + choice[0][1] + '</p></div>' +
                      '    <div class="jspsych-choice-right"><p>' + choice[1][0] + '</p><p>' + choice[1][1] + '</p></div>' +
@@ -250,7 +262,39 @@ if (!window.$ || !window._) {
     }
 
     function parseTestResults(rawData) {
-      console.log(rawData);
+      var results = _.map(rawData, function (data) {
+        var $dom = $(data.stimulus);
+            summary = JSON.parse($dom.attr('rel').replace(/'/g, '"'));
+
+        summary.stimuli = _.trim($dom.find('.jspsych-stimulus-word').text());
+        summary.result = data.key_press === KEYCODE_E ?
+                         _.trim(summary.left) :
+                         _.trim(summary.right);
+
+        return summary;
+      });
+      return results;
+    }
+
+    function reconcileResults(answerFormMatchingInputs, results) {
+      var reconciled = {};
+
+      _.each(answerFormMatchingInputs, function (input, i) {
+        reconciled[input.name] = JSON.stringify(results[i]);
+      });
+
+      return reconciled;
+    }
+
+    function sendResultsToServer(data) {
+      return $.ajax({
+        type: 'POST',
+        url: welcomePageObject.requestUrl,
+        data: data,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
     }
 
     function dispose() {
