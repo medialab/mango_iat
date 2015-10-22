@@ -224,10 +224,15 @@ if (!window.$ || !window._) {
 
       // Create markup for each jsPsych stimuli.
       _.each(choicesElements, function (choice, i) {
-        var markup = '<div class="jspsych-stimulus" rel="{\'left\':\'' + choice[0][0] + '|' + choice[0][1] + '\',\'right\':\'' + choice[1][0] + '|' + choice[1][1] + '\'}">' +
+        var markup = '<style>' +
+                     '  .jspsych-choice  { position: relative; float: left; width: 50%; font-size: 50px; text-align: center; padding-bottom: 100px; }' +
+                     '  .jspsych-choice p { margin-bottom: -50px; }' +
+                     '  .jspsych-stimulus-word { text-align: center; font-size: 30px; color: black; }' +
+                     '</style>' +
+                     '<div class="jspsych-stimulus" rel="{\'left\':\'' + choice[0][0] + '|' + choice[0][1] + '\',\'right\':\'' + choice[1][0] + '|' + choice[1][1] + '\'}">' +
                      '  <div class="jspsych-choices">' +
-                     '    <div class="jspsych-choice-left"><p>' + choice[0][0] + '</p><p>' + choice[0][1] + '</p></div>' +
-                     '    <div class="jspsych-choice-right"><p>' + choice[1][0] + '</p><p>' + choice[1][1] + '</p></div>' +
+                     '    <div class="jspsych-choice jspsych-choice-left"><p>' + choice[0][0] + '</p><p>' + choice[0][1] + '</p></div>' +
+                     '    <div class="jspsych-choice jspsych-choice-right"><p>' + choice[1][0] + '</p><p>' + choice[1][1] + '</p></div>' +
                      '  </div>' +
                      '  <div class="jspsych-stimulus-word">' + stimuliWords[i] + '</div>' +
                      '</div>';
