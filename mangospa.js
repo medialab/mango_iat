@@ -19,8 +19,17 @@ if (!window.$ || !window._) {
       var KEYCODE_E = 69,
           KEYCODE_I = 73;
 
+      // Storage for results gathering, matching and sending.
       var answerFormMatchingInputs = [],
           resultsFormData = {};
+
+      // Reusable style snippet.
+      var questionWrapperStyle = {
+        'width': '100%',
+        'background': 'none',
+        'font-size': '16px',
+        'text-align': 'center'
+      };
 
     // Check to see we go further with SPA or quit.
     if (!verifyIfSinglePageAppIsRequired()) {
@@ -45,12 +54,7 @@ if (!window.$ || !window._) {
 
     // Set up a UI using parsed element.
     welcomePageObject.$el.css('width', '100%');
-    $('.question_wrapper', welcomePageObject.$el).css({
-      'width': '100%',
-      'background': 'none',
-      'font-size': '16px',
-      'text-align': 'center'
-    }).find('.navigator')
+    $('.question_wrapper', welcomePageObject.$el).css(questionWrapperStyle).find('.navigator')
       .css({
         'width': '100%',
         'padding': 0
@@ -215,7 +219,7 @@ if (!window.$ || !window._) {
 
           sendResultsToServer(resultsFormData)
             .success(function (data) {
-              console.log(data);
+              renderClosingScreen($(data));
             })
             .fail(function () {
               console.error('[Mango Single Page App] There was an error sending back result to the server.');
@@ -311,6 +315,12 @@ if (!window.$ || !window._) {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       });
+    }
+
+    function renderClosingScreen($domTree) {
+      $domTree = $domTree.find('.question_wrapper');
+      $domTree.css(questionWrapperStyle);
+      $rootView.html($domTree);
     }
 
     function dispose() {
