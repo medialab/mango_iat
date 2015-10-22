@@ -163,7 +163,7 @@ if (!window.$ || !window._) {
       });
 
       // From LimeSurvey's raw DOM, get the stimuli words
-      var stimuliWords = _.map($domTree.find('table ~ p'), function (p) {
+      var stimuliWords = _.map($domTree.find('table ~ p:not(.question)'), function (p) {
         return p.innerText;
       });
 
@@ -268,7 +268,7 @@ if (!window.$ || !window._) {
 
     function parseTestResults(rawData) {
       var results = _.map(rawData, function (data) {
-        var $dom = $(data.stimulus);
+        var $dom = $($(data.stimulus)[1]),
             summary = JSON.parse($dom.attr('rel').replace(/'/g, '"'));
 
         summary.stimuli = _.trim($dom.find('.jspsych-stimulus-word').text());
