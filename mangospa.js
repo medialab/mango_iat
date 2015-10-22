@@ -44,6 +44,17 @@ if (!window.$ || !window._) {
     welcomePageObject = getScrapedWelcomePage();
 
     // Set up a UI using parsed element.
+    welcomePageObject.$el.css('width', '100%');
+    $('.question_wrapper', welcomePageObject.$el).css({
+      'width': '100%',
+      'background': 'none',
+      'font-size': '16px',
+      'text-align': 'center'
+    }).find('.navigator')
+      .css({
+        'width': '100%',
+        'padding': 0
+      })
     $rootView.append(welcomePageObject.$el);
 
     // Hijack submit button to prevent regular form submission,
@@ -304,6 +315,7 @@ if (!window.$ || !window._) {
 
     function dispose() {
       console.info('[Mango Single Page App] Stopping and cleaning up...');
+      // TODO: clean up resources
     }
 
   }());
