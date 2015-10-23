@@ -1,5 +1,5 @@
 if (!window.$ || !window._) {
-  console.error('[Mango Single Page App] Dependencies missing. Aborting...');
+  console.error('[Mango IAT] Dependencies missing. Aborting...');
 } else {
   var $ = window.$,
       _ = window._;
@@ -41,7 +41,7 @@ if (!window.$ || !window._) {
     // and check if no error code is appearing in the page
     // (e.g. if we're not authorized to see the content) to
     // ensure we can proceed.
-    console.info('[Mango Single Page App] Initializing.');
+    console.info('[Mango IAT] Initializing.');
     replaceLimeSurveyLayout();
     if (!isReady) {
       return;
@@ -80,7 +80,7 @@ if (!window.$ || !window._) {
         resultsFormData = prepareFormAnswerPostData($(htmlString));
         answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
       }).fail(function () {
-        console.error('[Mango Single Page App] Fetching questions — request failed.');
+        console.error('[Mango IAT] Fetching questions — request failed.');
         return dispose();
       });
     });
@@ -90,10 +90,10 @@ if (!window.$ || !window._) {
     }
 
     function replaceLimeSurveyLayout() {
-      console.log('[Mango Single Page App] Hiding LimeSurvey layout.');
+      console.log('[Mango IAT] Hiding LimeSurvey layout.');
 
       if (findPossibleStartupError()) {
-        console.info('[Mango Single Page App] Looks like there is a LimeSurvey displayed on page. I\'m aborting...');
+        console.info('[Mango IAT] Looks like there is a LimeSurvey displayed on page. I\'m aborting...');
         return dispose();
       }
 
@@ -222,7 +222,7 @@ if (!window.$ || !window._) {
               renderClosingScreen($(data));
             })
             .fail(function () {
-              console.error('[Mango Single Page App] There was an error sending back result to the server.');
+              console.error('[Mango IAT] There was an error sending back result to the server.');
               return dispose();
             });
         }
@@ -324,7 +324,7 @@ if (!window.$ || !window._) {
     }
 
     function dispose() {
-      console.info('[Mango Single Page App] Stopping and cleaning up...');
+      console.info('[Mango IAT] Stopping and cleaning up...');
       // TODO: clean up resources
     }
 
