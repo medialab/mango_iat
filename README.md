@@ -1,6 +1,6 @@
 # Goal
-Set a single page app layer on top of Limesurvey's [mango](https://raw.githubusercontent.com/medialab/mango_core) template
-to becomes a bridge between Limesurvey's backend and a IAT. Uses [jsPsych](http://jspsych.org) as a front-end interface.
+Set a single page app layer on top of Limesurvey's [mango](https://raw.githubusercontent.com/medialab/mango_core) template,
+becoming a bridge between Limesurvey's backend and a IAT. Uses [jsPsych](http://jspsych.org) as a front-end interface.
 
 For more information about Implicit Association Tests, [click here](https://implicit.harvard.edu/implicit/education.html).
 
