@@ -1,5 +1,5 @@
 if (!window.$ || !window._) {
-  console.error('[Mango IAT] Dependencies missing. Aborting...');
+  console.error('[Mango IAT] Dependencies (jQuery, Lodash) missing. Aborting...');
 } else {
   var $ = window.$,
       _ = window._;
