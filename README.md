@@ -15,13 +15,16 @@ It is dependent to jQuery and Lodash well as jsPsych.
 * Get [jsPsych](https://github.com/jodeleeuw/jsPsych) and place the distribution folder in your `/upload/templates/mango/scripts/` directory.
 * Clone this repository inside `/upload/templates/mango/scripts/` to create a `mango_iat` subfolder.
 * Open `/upload/templates/mango/startpage.pstpl` and add the path to the Lodash and jsPsych dependencies in the `<head>` as such:
-```<script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+
+```
+<script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
 <script type="text/javascript"src="{TEMPLATEURL}scripts/jspsych-4.3/jspsych.js"></script>
 <script type="text/javascript" src="{TEMPLATEURL}scripts/jspsych-4.3/plugins/jspsych-text.js"></script>
 <script type="text/javascript" src="{TEMPLATEURL}scripts/jspsych-4.3/plugins/jspsych-single-stim.js"></script>
 ```
 
 * Finally, add `mangoiat.js`, preferably at the end of `/upload/templates/mango/startpage.pstpl`, like this:
+
 ```
 <script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangospa.js"></script>
 ```
