@@ -26,7 +26,7 @@ It is dependent to jQuery and Lodash well as jsPsych.
 * Finally, add `mangoiat.js`, preferably at the end of `/upload/templates/mango/startpage.pstpl`, like this:
 
 ```
-<script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangospa.js"></script>
+<script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangoiat.js"></script>
 ```
 
 ## Usage
