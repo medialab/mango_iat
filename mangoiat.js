@@ -1,5 +1,5 @@
 if (!window.$ || !window._) {
-  console.error('[Mango IAT] Dependencies (jQuery, Lodash) missing. Aborting...');
+  console.error('[Mango IAT] Dependencies (jQuery, Lodash, IAT.js) missing. Aborting...');
 } else {
   var $ = window.$,
       _ = window._;
@@ -76,7 +76,7 @@ if (!window.$ || !window._) {
         }
       }).success(function (htmlString) {
         var $domExtract = $(extractNodeTree(htmlString));
-        initJsPsych(parseForJsPsych($domExtract));
+        initIAT(parseForIAT($domExtract));
         resultsFormData = prepareFormAnswerPostData($(htmlString));
         answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
       }).fail(function () {
@@ -165,96 +165,14 @@ if (!window.$ || !window._) {
       return (match && match.length > 1) ? match[1] : '';
     }
 
-    function parseForJsPsych($domTree) {
-      // From LimeSurvey's raw DOM, get the pieces used as
-      // choices (left and right parts of the screens).
-      var choicesElements = [];
-      _.each($domTree.find('td').find('p'), function (p, i) {
-        if (i % 2 === 0) {
-          choicesElements.push([p.innerText]);
-        } else {
-          choicesElements[choicesElements.length - 1].push(p.innerText);
-        }
-      });
+    function parseForIAT($domTree) {
 
-      // From LimeSurvey's raw DOM, get the stimuli words
-      var stimuliWords = _.map($domTree.find('table ~ p:not(.question)'), function (p) {
-        return p.innerText;
-      });
-
-      // Use this data to create the pieces for jsPsych
-      // (ignore the misleading/ambiguous usage of words like "stimuli" in jsPsych).
-      var jsPsychStimuli = createJsPsychStimuli(choicesElements, stimuliWords)
-          jsPsychKeyChoices = _.times(jsPsychStimuli.length, function () {
-            return [KEYCODE_E, KEYCODE_I];
-          });
-
-      return {
-        choices: jsPsychKeyChoices,
-        stimuli: jsPsychStimuli
-      };
     }
 
-    function initJsPsych(data) {
+    function initIAT(data) {
       $rootView.html('');
 
-      var jsPsychBlocks = _.map(data.stimuli, function (stim, i) {
-        return {
-          type: 'single-stim',
-          stimuli: [stim],
-          is_html: true,
-          choices: data.choices[i]
-        };
-      });
 
-      // Create the jsPsych instance and let the user finish its test.
-      // Upon test completion, finish populating POST data with serialized
-      // results, and send data to server.
-      return jsPsych.init({
-        display_element: $rootView,
-        experiment_structure: jsPsychBlocks,
-        on_finish: function (data) {
-          var results = parseTestResults(data);
-          resultsFormData = _.extend(resultsFormData, reconcileResults(answerFormMatchingInputs, results));
-
-          sendResultsToServer(resultsFormData)
-            .success(function (data) {
-              renderClosingScreen($(data));
-            })
-            .fail(function () {
-              console.error('[Mango IAT] There was an error sending back result to the server.');
-              return dispose();
-            });
-        }
-      });
-    }
-
-    function createJsPsychStimuli(choicesElements, stimuliWords) {
-      var howMany = stimuliWords.length,
-          htmlChunks = [];
-
-      // Rearrange choices elements by pair so that we have
-      // arrays grouping left and right choices on screen.
-      var choicesElements = _.chunk(choicesElements, 2);
-
-      // Create markup for each jsPsych stimuli.
-      _.each(choicesElements, function (choice, i) {
-        var markup = '<style>' +
-                     '  .jspsych-choice  { position: relative; float: left; width: 50%; font-size: 50px; text-align: center; padding-bottom: 100px; }' +
-                     '  .jspsych-choice p { margin-bottom: -50px; }' +
-                     '  .jspsych-stimulus-word { text-align: center; font-size: 30px; color: black; }' +
-                     '</style>' +
-                     '<div class="jspsych-stimulus" rel="{\'left\':\'' + choice[0][0] + '|' + choice[0][1] + '\',\'right\':\'' + choice[1][0] + '|' + choice[1][1] + '\'}">' +
-                     '  <div class="jspsych-choices">' +
-                     '    <div class="jspsych-choice jspsych-choice-left"><p>' + choice[0][0] + '</p><p>' + choice[0][1] + '</p></div>' +
-                     '    <div class="jspsych-choice jspsych-choice-right"><p>' + choice[1][0] + '</p><p>' + choice[1][1] + '</p></div>' +
-                     '  </div>' +
-                     '  <div class="jspsych-stimulus-word">' + stimuliWords[i] + '</div>' +
-                     '</div>';
-        htmlChunks.push(markup);
-      });
-
-      return htmlChunks;
     }
 
     function prepareFormAnswerPostData($domTree) {
