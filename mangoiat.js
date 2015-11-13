@@ -1,35 +1,35 @@
 if (!window.$ || !window._) {
   console.error('[Mango IAT] Dependencies (jQuery, Lodash, IAT.js) missing. Aborting...');
 } else {
-  var $ = window.$,
-      _ = window._;
+  var $ = window.$;
+  var _ = window._;
 
-  $(function () {
-      // Declare and/or assign parsable DOM node,
-      // jQuery-wrapped DOM for building single page app,
-      // object holding relevant element from the parsing
-      // of the welcome page, and boolean flag to check
-      // if preliminary work is done.
-      var $content = $('#content'),
-          $rootView = null,
-          welcomePageObject = {},
-          isReady = false;
+  $(function() {
+    // Declare and/or assign parsable DOM node,
+    // jQuery-wrapped DOM for building single page app,
+    // object holding relevant element from the parsing
+    // of the welcome page, and boolean flag to check
+    // if preliminary work is done.
+    var $content = $('#content');
+    var $rootView = null;
+    var welcomePageObject = {};
+    var isReady = false;
 
-      // Constants for keyboard inputs.
-      var KEYCODE_E = 69,
-          KEYCODE_I = 73;
+    // Constants for keyboard inputs.
+    var KEYCODE_E = 69;
+    var KEYCODE_I = 73;
 
-      // Storage for results gathering, matching and sending.
-      var answerFormMatchingInputs = [],
-          resultsFormData = {};
+    // Storage for results gathering, matching and sending.
+    var answerFormMatchingInputs = [];
+    var resultsFormData = {};
 
-      // Reusable style snippet.
-      var questionWrapperStyle = {
-        'width': '100%',
-        'background': 'none',
-        'font-size': '16px',
-        'text-align': 'center'
-      };
+    // Reusable style snippet.
+    var questionWrapperStyle = {
+      width: '100%',
+      background: 'none',
+      'font-size': '16px',
+      'text-align': 'center',
+    };
 
     // Check to see we go further with SPA or quit.
     if (!verifyIfSinglePageAppIsRequired()) {
@@ -56,30 +56,30 @@ if (!window.$ || !window._) {
     welcomePageObject.$el.css('width', '100%');
     $('.question_wrapper', welcomePageObject.$el).css(questionWrapperStyle).find('.navigator')
       .css({
-        'width': '100%',
-        'padding': 0
-      })
+        width: '100%',
+        padding: 0,
+      });
     $rootView.append(welcomePageObject.$el);
 
     // Hijack submit button to prevent regular form submission,
     // while fetching the actual POST result via ajax.
     // Get the HTML raw string as a result, DOMize it via jQuery,
     // and use it as a base to build jsPsych-related content.
-    welcomePageObject.$nextBtn.on('click', function (e) {
+    welcomePageObject.$nextBtn.on('click', function(e) {
       e.preventDefault();
       $.ajax({
         type: 'POST',
         url: welcomePageObject.requestUrl,
         data: welcomePageObject.requestBody,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).success(function (htmlString) {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }).success(function(htmlString) {
         var $domExtract = $(extractNodeTree(htmlString));
         initIAT(parseForIAT($domExtract));
         resultsFormData = prepareFormAnswerPostData($(htmlString));
         answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
-      }).fail(function () {
+      }).fail(function() {
         console.error('[Mango IAT] Fetching questions — request failed.');
         return dispose();
       });
@@ -102,20 +102,20 @@ if (!window.$ || !window._) {
       $('body')
         .append('<div id="mangospa"></div>')
         .css({
-          'overflow': 'hidden'
+          overflow: 'hidden',
         });
 
       $rootView = $('#mangospa');
 
       $rootView
         .css({
-          'position': 'absolute',
-          'overflow': 'auto',
-          'top': 0,
-          'left': 0,
-          'width': '100%',
-          'height': '100%',
-          'background-color': '#CCC'
+          position: 'absolute',
+          overflow: 'auto',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          'background-color': '#CCC',
         });
     }
 
@@ -125,27 +125,27 @@ if (!window.$ || !window._) {
     }
 
     function getScrapedWelcomePage() {
-      var $formNode = $content.find('form#limesurvey'),
-          $nextBtn = $formNode.find('#movenextbtn'),
-          $formInputs = $formNode.find('input'),
-          formAction = $formNode.attr('action'),
-          dataToPost = {},
-          promise = null,
-          moveNext = $nextBtn.attr('value');
+      var $formNode = $content.find('form#limesurvey');
+      var $nextBtn = $formNode.find('#movenextbtn');
+      var $formInputs = $formNode.find('input');
+      var formAction = $formNode.attr('action');
+      var dataToPost = {};
+      var promise = null;
+      var moveNext = $nextBtn.attr('value');
 
-          // Get a pivotal piece of data from
-          // the 'next' button, to move LimeSurvey's
-          // state manager.
-          dataToPost[moveNext] = moveNext;
+      // Get a pivotal piece of data from
+      // the 'next' button, to move LimeSurvey's
+      // state manager.
+      dataToPost[moveNext] = moveNext;
 
       // Create request body for POSTing.
-      _.each($formInputs, function (input) {
+      _.each($formInputs, function(input) {
         dataToPost[input.name] = input.value;
       });
 
       // Ensure form submit without clicking on our
       // hijacked button is void.
-      $formNode.on('submit', function (e) {
+      $formNode.on('submit', function(e) {
         e.preventDefault();
       });
 
@@ -153,7 +153,7 @@ if (!window.$ || !window._) {
         requestBody: dataToPost,
         requestUrl: formAction,
         $el: $formNode,
-        $nextBtn: $nextBtn
+        $nextBtn: $nextBtn,
       };
     }
 
@@ -171,8 +171,6 @@ if (!window.$ || !window._) {
 
     function initIAT(data) {
       $rootView.html('');
-
-
     }
 
     function prepareFormAnswerPostData($domTree) {
@@ -180,44 +178,35 @@ if (!window.$ || !window._) {
 
       // Value extracted from submit button,
       // needed to alter LimeSurvey's state manager.
-      resultsFormData['movesubmit'] = 'movesubmit';
+      resultsFormData.movesubmit = 'movesubmit';
 
-      _.each($domTree.find('input[type="hidden"]'), function (elm) {
+      _.each($domTree.find('input[type="hidden"]'), function(elm) {
         resultsFormData[elm.name] = elm.value;
       });
+
       return resultsFormData;
     }
 
     function prepareFormAnswerMatching($domTree) {
       var answerFormMatchingInputs = [];
-      _.each($domTree.find('input[type="text"]'), function (input) {
+      _.each($domTree.find('input[type="text"]'), function(input) {
         answerFormMatchingInputs.push({
           name: input.name,
-          value: ''
+          value: '',
         });
       });
-      return answerFormMatchingInputs
+
+      return answerFormMatchingInputs;
     }
 
     function parseTestResults(rawData) {
-      var results = _.map(rawData, function (data) {
-        var $dom = $($(data.stimulus)[1]),
-            summary = JSON.parse($dom.attr('rel').replace(/'/g, '"'));
 
-        summary.stimuli = _.trim($dom.find('.jspsych-stimulus-word').text());
-        summary.result = data.key_press === KEYCODE_E ?
-                         _.trim(summary.left) :
-                         _.trim(summary.right);
-
-        return summary;
-      });
-      return results;
     }
 
     function reconcileResults(answerFormMatchingInputs, results) {
       var reconciled = {};
 
-      _.each(answerFormMatchingInputs, function (input, i) {
+      _.each(answerFormMatchingInputs, function(input, i) {
         reconciled[input.name] = JSON.stringify(results[i]);
       });
 
@@ -230,8 +219,8 @@ if (!window.$ || !window._) {
         url: welcomePageObject.requestUrl,
         data: data,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       });
     }
 
@@ -243,6 +232,7 @@ if (!window.$ || !window._) {
 
     function dispose() {
       console.info('[Mango IAT] Stopping and cleaning up...');
+
       // TODO: clean up resources
     }
 
