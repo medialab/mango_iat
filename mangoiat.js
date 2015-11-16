@@ -165,12 +165,65 @@ if (!window.$ || !window._) {
       return (match && match.length > 1) ? match[1] : '';
     }
 
-    function parseForIAT($domTree) {
+    function parseItems(itemString) {
+      var result = itemString.split(',').map(function(item) {return item.trim();});
 
+      if (result.length < 2) {
+        throw(new Error('not enough items in string'));
+      }
+
+      return result;
+    }
+
+    function parseForIAT($domTree) {
+      var result = [];
+      var questionData = [];
+
+      // for each question container
+      $domTree.find('.question_wrapper')
+        .each(function(questionIndex, questionElement) {
+          var questionSubData = {};
+
+          // for each child element in the question container
+          $(questionElement).children()
+            .each(function(childIndex, child) {
+              if (child.tagName[0] === 'H') {
+                if (questionSubData.type) {
+                  console.warn('missing items for ', questionSubData.type);
+                }
+
+                questionSubData.type = child.innerHTML;
+              } else if (questionSubData.type && !questionSubData.items) {
+                var items;
+                try {
+                  items = parseItems(child.innerHTML);
+                }
+                catch (error) {
+                }
+
+                if (items) {
+                  questionSubData.items = items;
+                }
+              }
+
+              if (questionSubData.type && questionSubData.items) {
+                questionData.push(questionSubData);
+                questionSubData = {};
+              }
+            });
+
+          if (questionData.length === 2) {
+            result.push(questionData);
+            questionData = [];
+          }
+        });
+
+      return result;
     }
 
     function initIAT(data) {
       $rootView.html('');
+      IAT.start($rootView, data);
     }
 
     function prepareFormAnswerPostData($domTree) {
