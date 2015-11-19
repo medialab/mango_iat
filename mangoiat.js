@@ -213,10 +213,10 @@ if (!window.$ || !window._ || !window.IAT) {
                   } else {
                     questionData.splash = {
                       message: questionSubData.type.replace(
-                          /\{([^\}]+)\}/g,
-                          function(match, p1) {
-                            return '{{' + p1.trim() + '}}';
-                          }
+                        /\{([^\}]+)\}/g,
+                        function(match, p1) {
+                          return '{{' + p1.trim() + '}}';
+                        }
                       ),
                     };
                   }
