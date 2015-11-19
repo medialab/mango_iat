@@ -187,9 +187,16 @@ if (!window.$ || !window._ || !window.IAT) {
       return result;
     }
 
+    function createQuestionData() {
+      return {
+        test: [],
+        splash: false,
+      };
+    }
+
     function parseForIAT($domTree) {
       var result = [];
-      var questionData = [];
+      var questionData = createQuestionData();
 
       // for each question container
       $domTree.find('.question_wrapper')
@@ -201,10 +208,21 @@ if (!window.$ || !window._ || !window.IAT) {
             .each(function(childIndex, child) {
               if (child.tagName[0] === 'H') {
                 if (questionSubData.type) {
-                  console.warn('missing items for ', questionSubData.type);
+                  if (questionData.splash.message) {
+                    questionData.splash.buttonText = questionSubData.type;
+                  } else {
+                    questionData.splash = {
+                      message: questionSubData.type.replace(
+                          /\{([^\}]+)\}/g,
+                          function(match, p1) {
+                            return '{{' + p1.trim() + '}}';
+                          }
+                      ),
+                    };
+                  }
                 }
 
-                questionSubData.type = child.innerHTML;
+                questionSubData.type = child.textContent;
               } else if (questionSubData.type && !questionSubData.items) {
                 var items;
                 try {
@@ -219,17 +237,14 @@ if (!window.$ || !window._ || !window.IAT) {
               }
 
               if (questionSubData.type && questionSubData.items) {
-                questionData.push(questionSubData);
+                questionData.test.push(questionSubData);
                 questionSubData = {};
               }
             });
 
-          if (questionData.length === 2) {
-            result.push({
-              test: questionData,
-              splash: true,
-            });
-            questionData = [];
+          if (questionData.test.length === 2) {
+            result.push(questionData);
+            questionData = createQuestionData();
           }
         });
 
