@@ -86,7 +86,10 @@ if (!window.$ || !window._ || !window.IAT) {
 
             sendResultsToServer(resultsFormData).success(function(serverResponse) {
               var $serverResponse = $(serverResponse);
-              var nextUrl = $serverResponse;
+              var nextUrl = $serverResponse.find('#completed-url a').attr('href');
+              if (nextUrl) {
+                window.location.replace(nextUrl);
+              }
             });
 
             answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
