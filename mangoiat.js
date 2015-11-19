@@ -1,4 +1,4 @@
-if (!window.$ || !window._) {
+if (!window.$ || !window._ || !window.IAT) {
   console.error('[Mango IAT] Dependencies (jQuery, Lodash, IAT.js) missing. Aborting...');
 } else {
   var $ = window.$;
@@ -76,9 +76,21 @@ if (!window.$ || !window._) {
         },
       }).success(function(htmlString) {
         var $domExtract = $(extractNodeTree(htmlString));
-        initIAT(parseForIAT($domExtract));
-        resultsFormData = prepareFormAnswerPostData($(htmlString));
-        answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
+        initIAT(parseForIAT($domExtract))
+          .then(function(results) {
+            resultsFormData = prepareFormAnswerPostData($(htmlString));
+            var fieldNames = resultsFormData.fieldnames.split('|');
+            fieldNames.forEach(function(fieldName, index) {
+              resultsFormData[fieldName] = JSON.stringify(results[index]);
+            });
+
+            sendResultsToServer(resultsFormData).success(function(serverResponse) {
+              var $serverResponse = $(serverResponse);
+              var nextUrl = $serverResponse;
+            });
+
+            answerFormMatchingInputs = prepareFormAnswerMatching($domExtract);
+          });
       }).fail(function() {
         console.error('[Mango IAT] Fetching questions — request failed.');
         return dispose();
@@ -196,7 +208,7 @@ if (!window.$ || !window._) {
               } else if (questionSubData.type && !questionSubData.items) {
                 var items;
                 try {
-                  items = parseItems(child.innerHTML);
+                  items = parseItems(child.textContent);
                 }
                 catch (error) {
                 }
@@ -213,7 +225,10 @@ if (!window.$ || !window._) {
             });
 
           if (questionData.length === 2) {
-            result.push(questionData);
+            result.push({
+              test: questionData,
+              splash: true,
+            });
             questionData = [];
           }
         });
@@ -223,7 +238,7 @@ if (!window.$ || !window._) {
 
     function initIAT(data) {
       $rootView.html('');
-      IAT.start($rootView, data);
+      return IAT.start($rootView, data, 'upload/templates/mango/scripts/iat.js/');
     }
 
     function prepareFormAnswerPostData($domTree) {
