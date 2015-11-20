@@ -34,7 +34,13 @@ It is dependent to jQuery and Lodash well as iat.js.
 4. Create a question within the group.
 5. Question should be **Mandatory**, with _type_ set to **Short Free Text**.
 6. Within the _question_ field, write the name of the concept that will be displayed on the left. Set its style to a title (any level). On a line below write a coma-separated list of concepts that are associated with this concept. Then below add again a title-styled concept followed by its coma-separated list of related words.
+
+![Alt question illustration](https://github.com/medialab/mango_iat/raw/iat/question.png)
+
 7. You can optionally add splash screen messages that will be displayed before and/or after the test. In order to do that, add your message in the _help_ field. If you want to display a message after the test as well, you can add a horizontal separator and add that message below it. In thoses messages, you can include the concepts that will be displayed on the left and on the right during the test. Simply insert {{left}} and {{right}} where you want them to appear. Additionally, you should set the text for the button. The syntax for that is [[your button text]].
+
+![Alt splash illustration](https://github.com/medialab/mango_iat/raw/iat/splash.png)
+
 8. Fill the left column with what you'd want to see on the left half of the screen, and the right column with what you expect on the right half of the screen.
 9. Save and repeat steps 4 to 8 with another question.
 
