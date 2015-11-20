@@ -1,32 +1,30 @@
 # Goal
 Set a single page app layer on top of Limesurvey's [mango](https://raw.githubusercontent.com/medialab/mango_core) template,
-becoming a bridge between Limesurvey's backend and a IAT. Uses [jsPsych](http://jspsych.org) as a front-end interface.
+becoming a bridge between Limesurvey's backend and a IAT. Uses [iat.js](https://github.com/medialab/iat.js) as a front-end interface.
 
 For more information about Implicit Association Tests, [click here](https://implicit.harvard.edu/implicit/education.html).
 
 # Installation
 Because **mangoiat.js** should be a low-footprint, ad-hoc solution, it's purposely not distributed in a **grunt/gulp** setup.
-It is dependent to jQuery and Lodash well as jsPsych.
+It is dependent to jQuery and Lodash well as iat.js.
 
 ## Install the mango template and router plugin
 * Follow instructions [here](https://github.com/medialab/mango_core#readme).
 
 ## Add dependencies
-* Get [jsPsych](https://github.com/jodeleeuw/jsPsych) and place the distribution folder in your `/upload/templates/mango/scripts/` directory.
+* Get [iat.js](https://github.com/medialab/iat.js) and place the distribution folder in your `/upload/templates/mango/scripts/` directory.
 * Clone this repository inside `/upload/templates/mango/scripts/` to create a `mango_iat` subfolder.
-* Open `/upload/templates/mango/startpage.pstpl` and add the path to the Lodash and jsPsych dependencies in the `<head>` as such:
+* Open `/upload/templates/mango/startpage.pstpl` and add the path to the Lodash and iat.js dependencies at the end of the `<head>` section as such:
 
 ```
 <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
-<script type="text/javascript"src="{TEMPLATEURL}scripts/jspsych-4.3/jspsych.js"></script>
-<script type="text/javascript" src="{TEMPLATEURL}scripts/jspsych-4.3/plugins/jspsych-text.js"></script>
-<script type="text/javascript" src="{TEMPLATEURL}scripts/jspsych-4.3/plugins/jspsych-single-stim.js"></script>
+<script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangoiat.js"></script>
 ```
 
-* Finally, add `mangoiat.js`, preferably at the end of `/upload/templates/mango/startpage.pstpl`, like this:
+* add `mangoiat.js`, at the end of `/upload/templates/mango/endpage.pstpl`, like this:
 
 ```
-<script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangospa.js"></script>
+<script type="text/javascript" src="{TEMPLATEURL}scripts/mango_iat/mangoiat.js"></script>
 ```
 
 ## Usage
@@ -35,9 +33,9 @@ It is dependent to jQuery and Lodash well as jsPsych.
 3. Create a question group with its welcome and ending screens.
 4. Create a question within the group.
 5. Question should be **Mandatory**, with _type_ set to **Short Free Text**.
-6. Within the _question_ field, use the WYSIWYG to create a single-row, double-column table.
-7. Fill the left column with what you'd want to see on the left half of the screen, and the right column with what you expect on the right half of the screen.
-8. Below the table, add the stimulus word for this block.
+6. Within the _question_ field, write the name of the concept that will be displayed on the left. Set its style to a title (any level). On a line below write a coma-separated list of concepts that are associated with this concept. Then below add again a title-styled concept followed by its coma-separated list of related words.
+7. You can optionally add splash screen messages that will be displayed before and/or after the test. In order to do that, add your message in the _help_ field. If you want to display a message after the test as well, you can add a horizontal separator and add that message below it. In thoses messages, you can include the concepts that will be displayed on the left and on the right during the test. Simply insert {{left}} and {{right}} where you want them to appear. Additionally, you should set the text for the button. The syntax for that is [[your button text]].
+8. Fill the left column with what you'd want to see on the left half of the screen, and the right column with what you expect on the right half of the screen.
 9. Save and repeat steps 4 to 8 with another question.
 
 Upon completion of the test, the answers will be matched to the related form input set in the backend.
