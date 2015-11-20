@@ -181,7 +181,9 @@ if (!window.$ || !window._ || !window.IAT) {
     }
 
     function parseItems(itemString) {
-      var result = itemString.split(',').map(function(item) {return item.trim();});
+      var result = itemString.split(',')
+        .map(function(item) {return item.trim();})
+        .filter(function(item) {return item.length;});
 
       if (result.length < 2) {
         throw(new Error('not enough items in string'));
@@ -276,11 +278,19 @@ if (!window.$ || !window._ || !window.IAT) {
                   return '{{' + p1.trim() + '}}';
                 }
               );
-              messagePart = '<' + element.tagName + '>' + messagePart + '</' + element.tagName + '>';
-              currentScreen.message += messagePart;
+              if (messagePart.trim().length) {
+                messagePart = '<' + element.tagName + '>' + messagePart + '</' + element.tagName + '>';
+                currentScreen.message += messagePart;
+              }
             }
           }
         });
+
+      keys.forEach(function(key) {
+        if (!result[key].message.trim().length && !(result[key].buttonText && result[key].buttonText.length)) {
+          result[key] = false;
+        }
+      });
 
       return result;
     }
