@@ -194,56 +194,110 @@ if (!window.$ || !window._ || !window.IAT) {
       return {
         test: [],
         splash: false,
+        post: false,
       };
+    }
+
+    function parseQuestion($question) {
+      var test = [];
+      var questionSubData = {};
+
+      // for each child element in the question container
+      $question.children()
+        .each(function(childIndex, child) {
+          if (child.tagName[0] === 'H') {
+            if (questionSubData.type) {
+              console.warn('no item found for type', questionSubData.type);
+            }
+
+            questionSubData.type = child.textContent;
+          } else if (questionSubData.type && !questionSubData.items) {
+            var items;
+            try {
+              items = parseItems(child.textContent);
+            }
+            catch (error) {
+            }
+
+            if (items) {
+              questionSubData.items = items;
+            }
+          }
+
+          if (questionSubData.type && questionSubData.items) {
+            test.push(questionSubData);
+            questionSubData = {};
+          }
+        });
+
+      return test;
+    }
+
+    function parseButton(text) {
+      var match = /\[\[([^\]]+)\]\]/.exec(text);
+
+      return match && match[1];
+    }
+
+    function parseHelp($help) {
+      var result = {
+        splash: false,
+        post: false,
+      };
+      var keys = ['splash', 'post'];
+      var currentIndex = 0;
+      var $element;
+
+      $help.children()
+        .each(function(index, element) {
+          $element = $(element);
+          if (currentIndex > 1) {
+            return;
+          }
+
+          if (element.tagName === 'HR') {
+            currentIndex += 1;
+          } else {
+            if (!result[keys[currentIndex]]) {
+              result[keys[currentIndex]] = {
+                message: '',
+              };
+            }
+
+            var currentScreen = result[keys[currentIndex]];
+
+            var textButton = parseButton($element.text());
+            if (textButton) {
+              currentScreen.buttonText = textButton;
+            } else if ($element.text().length) {
+              var messagePart = $element.text().replace(
+                /\{([^\}]+)\}/g,
+                function(match, p1) {
+                  return '{{' + p1.trim() + '}}';
+                }
+              );
+              messagePart = '<' + element.tagName + '>' + messagePart + '</' + element.tagName + '>';
+              currentScreen.message += messagePart;
+            }
+          }
+        });
+
+      return result;
     }
 
     function parseForIAT($domTree) {
       var result = [];
       var questionData = createQuestionData();
+      var helpElements = $domTree.find('.anim_help');
+      var helpData;
 
       // for each question container
       $domTree.find('.question_wrapper')
         .each(function(questionIndex, questionElement) {
-          var questionSubData = {};
-
-          // for each child element in the question container
-          $(questionElement).children()
-            .each(function(childIndex, child) {
-              if (child.tagName[0] === 'H') {
-                if (questionSubData.type) {
-                  if (questionData.splash.message) {
-                    questionData.splash.buttonText = questionSubData.type;
-                  } else {
-                    questionData.splash = {
-                      message: questionSubData.type.replace(
-                        /\{([^\}]+)\}/g,
-                        function(match, p1) {
-                          return '{{' + p1.trim() + '}}';
-                        }
-                      ),
-                    };
-                  }
-                }
-
-                questionSubData.type = child.textContent;
-              } else if (questionSubData.type && !questionSubData.items) {
-                var items;
-                try {
-                  items = parseItems(child.textContent);
-                }
-                catch (error) {
-                }
-
-                if (items) {
-                  questionSubData.items = items;
-                }
-              }
-
-              if (questionSubData.type && questionSubData.items) {
-                questionData.test.push(questionSubData);
-                questionSubData = {};
-              }
-            });
+          questionData.test = parseQuestion($(questionElement));
+          helpData = parseHelp($(helpElements[questionIndex]));
+          questionData.splash = helpData.splash;
+          questionData.post = helpData.post;
 
           if (questionData.test.length === 2) {
             result.push(questionData);
