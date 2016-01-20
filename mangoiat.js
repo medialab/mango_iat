@@ -287,8 +287,7 @@ if (!window.$ || !window._ || !window.IAT) {
         });
 
       keys.forEach(function(key) {
-        if (!result[key].message || (!result[key].message.trim().length && !(result[key].buttonText && result[key].buttonText.length))) {
-          console.warn('no', key, 'screen found');
+        if (!result[key] || !result[key].message.trim().length && !(result[key].buttonText && result[key].buttonText.length)) {
           result[key] = false;
         }
       });
