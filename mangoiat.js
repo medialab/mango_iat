@@ -300,9 +300,10 @@ if (!window.$ || !window._ || !window.IAT) {
       var questionData = createQuestionData();
       var helpElements = $domTree.find('.anim_help');
       var helpData;
+      var $questions = $domTree.find('.question_wrapper');
 
       // for each question container
-      $domTree.find('.question_wrapper')
+      $questions
         .each(function(questionIndex, questionElement) {
           questionData.test = parseQuestion($(questionElement));
           helpData = parseHelp($(helpElements[questionIndex]));
@@ -314,6 +315,16 @@ if (!window.$ || !window._ || !window.IAT) {
             questionData = createQuestionData();
           }
         });
+
+      if (result.length !== $questions.length) {
+        console.error(
+          "[Mango IAT]\nThere was a problem parsing DOM content for the questions.\n" +
+          "One or more questions will not appear!\n" +
+          "In LimeSurvey's admin, in the textarea for your questions,\ntoggle the 'source' " +
+          "button and check you have a succession \nof 'h4' tags for title with 'div' tags for " +
+          "the list of words. No nesting!"
+        );
+      }
 
       return result;
     }
