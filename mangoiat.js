@@ -57,7 +57,9 @@ if (!window.$ || !window._ || !window.IAT) {
 
     // Set up a UI using parsed element.
     welcomePageObject.$el.css('width', '100%');
-    $('.question_wrapper', welcomePageObject.$el).css(questionWrapperStyle).find('.navigator')
+    $('.question_wrapper', welcomePageObject.$el)
+      .css(questionWrapperStyle)
+      .find('.navigator')
       .css({
         width: '100%',
         padding: 0,
