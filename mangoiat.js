@@ -4,6 +4,9 @@ if (!window.$ || !window._ || !window.IAT) {
   var $ = window.$;
   var _ = window._;
 
+  // If following marker exists in survey title, IAT single-page is triggered.
+  var MARKER = 'IAT';
+
   $(function() {
     // Declare and/or assign parsable DOM node,
     // jQuery-wrapped DOM for building single page app,
@@ -101,7 +104,7 @@ if (!window.$ || !window._ || !window.IAT) {
     });
 
     function verifyIfSinglePageAppIsRequired() {
-      return $('title').get(0).text.indexOf('[IAT]') > -1;
+      return $('title').get(0).text.indexOf(MARKER) > -1;
     }
 
     function replaceLimeSurveyLayout() {
